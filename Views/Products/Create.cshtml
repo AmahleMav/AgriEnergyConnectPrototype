@@ -13,7 +13,13 @@
     </div>
     <div class="form-group">
         <label asp-for="Category"></label>
-        <input asp-for="Category" class="form-control" />
+        <select asp-for="Category" class="form-control">
+            <option>Vegetables</option>
+            <option>Dairy</option>
+            <option>Meat</option>
+            <option>Fruits</option>
+            <option>Poultry</option>
+        </select>
         <span asp-validation-for="Category" class="text-danger" />
     </div>
     <div class="form-group">

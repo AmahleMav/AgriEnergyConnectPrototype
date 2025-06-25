@@ -19,21 +19,21 @@ namespace AgriEnergyConnectPrototype.Controllers
             _userManager = userManager;
         }
 
-        // List all products (Employee can filter)
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> Index(string location, string category)
         {
             var query = _context.Products.Include(p => p.FarmerProfile).AsQueryable();
 
+            // Support keyword-based filtering
             if (!string.IsNullOrEmpty(location))
-                query = query.Where(p => p.Location == location);
+                query = query.Where(p => EF.Functions.Like(p.Location, $"%{location}%"));
 
             if (!string.IsNullOrEmpty(category))
-                query = query.Where(p => p.Category == category);
+                query = query.Where(p => EF.Functions.Like(p.Category, $"%{category}%"));
 
             return View(await query.ToListAsync());
         }
 
-        // Only Farmer can add
         [Authorize(Roles = "Farmer")]
         public IActionResult Create()
         {
@@ -55,7 +55,7 @@ namespace AgriEnergyConnectPrototype.Controllers
                     return View(product);
                 }
 
-                product.FarmerId = profile.FarmerId; // ✅ assign int
+                product.FarmerId = profile.FarmerId;
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(MyProducts));
@@ -80,6 +80,5 @@ namespace AgriEnergyConnectPrototype.Controllers
 
             return View(products);
         }
-
     }
 }
