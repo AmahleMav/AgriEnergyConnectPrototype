@@ -26,7 +26,7 @@ namespace AgriEnergyConnectPrototype.Models
         public string UserId { get; set; }
 
         [ForeignKey("UserId")]
-        public IdentityUser User { get; set; }
+        public ApplicationUser User { get; set; }
 
         public ICollection<Product> Products { get; set; }
     }

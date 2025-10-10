@@ -14,10 +14,10 @@ namespace AgriEnergyConnectPrototype.Data
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-            // Seed roles
+            // Ensure roles exist
             string[] roles = { "Admin", "Farmer", "Employee" };
             foreach (var role in roles)
             {
@@ -28,142 +28,143 @@ namespace AgriEnergyConnectPrototype.Data
                 }
             }
 
-            // Seed Admin
-            var adminEmail = "admin@agriconnect.co.za";
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
-            if (adminUser == null)
+            // Special users to seed
+            var seedUsers = new List<ApplicationUser>
             {
-                adminUser = new IdentityUser
+                new ApplicationUser
                 {
-                    UserName = adminEmail,
-                    Email = adminEmail,
+                    UserName = "admin@agriconnect.co.za",
+                    Email = "admin@agriconnect.co.za",
+                    FirstName = "System",
+                    LastName = "Administrator",
                     EmailConfirmed = true
-                };
-
-                var result = await userManager.CreateAsync(adminUser, "Admin123!");
-                if (result.Succeeded)
+                },
+                new ApplicationUser
                 {
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
-                    Console.WriteLine("Admin user seeded.");
-                }
-                else
+                    UserName = "employee@agriconnect.co.za",
+                    Email = "employee@agriconnect.co.za",
+                    FirstName = "Emma",
+                    LastName = "Employee",
+                    EmailConfirmed = true
+                },
+                new ApplicationUser
                 {
-                    Console.WriteLine($"Failed to seed admin: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    UserName = "johnvanwyk@agrifarm.com",
+                    Email = "johnvanwyk@agrifarm.com",
+                    FirstName = "John",
+                    LastName = "Van Wyk",
+                    EmailConfirmed = true
+                },
+                new ApplicationUser
+                {
+                    UserName = "mariamkhwanazi@greenfields.com",
+                    Email = "mariamkhwanazi@greenfields.com",
+                    FirstName = "Maria",
+                    LastName = "Mkhwanazi",
+                    EmailConfirmed = true
+                },
+                new ApplicationUser
+                {
+                    UserName = "davidwilson@agrifields.com",
+                    Email = "davidwilson@agrifields.com",
+                    FirstName = "David",
+                    LastName = "Wilson",
+                    EmailConfirmed = true
                 }
-            }
-
-            // Seed Farmers with Profiles and Products
-            var farmers = new List<(IdentityUser user, FarmerProfile profile)>
-            {
-                (
-                    new IdentityUser { UserName = "johnvanwyk@agrifarm.com", Email = "johnvanwyk@agrifarm.com", EmailConfirmed = true },
-                    new FarmerProfile
-                    {
-                        FirstName = "John",
-                        LastName = "Van Wyk",
-                        PhoneNumber = "082-511-6522",
-                        Products = new List<Product>
-                        {
-                            new Product { ProductName = "Organic Tomatoes", Category = "Vegetables", Location = "Kwa-Zulu Natal", ProductionDate = DateTime.Now },
-                            new Product { ProductName = "Free-Range Eggs", Category = "Poultry", Location = "Kwa-Zulu Natal", ProductionDate = DateTime.Now },
-                            new Product { ProductName = "Organic Carrots", Category = "Vegetables", Location = "Kwa-Zulu Natal", ProductionDate = DateTime.Now }
-                        }
-                    }
-                ),
-                (
-                    new IdentityUser { UserName = "mariamkhwanazi@greenfields.com", Email = "mariamkhwanazi@greenfields.com", EmailConfirmed = true },
-                    new FarmerProfile
-                    {
-                        FirstName = "Maria",
-                        LastName = "Mkhwanazi",
-                        PhoneNumber = "071-624-5341",
-                        Products = new List<Product>
-                        {
-                            new Product { ProductName = "Artisanal Cheese", Category = "Dairy", Location = "Eastern Cape", ProductionDate = DateTime.Now.AddDays(-7) },
-                            new Product { ProductName = "Grass-Fed Beef", Category = "Meat", Location = "Eastern Cape", ProductionDate = DateTime.Now.AddDays(-28) },
-                            new Product { ProductName = "Goat Milk", Category = "Dairy", Location = "Eastern Cape", ProductionDate = DateTime.Now }
-                        }
-                    }
-                ),
-                (
-                    new IdentityUser { UserName = "davidwilson@agrifields", Email = "davidwilson@agrifields.com", EmailConfirmed = true },
-                    new FarmerProfile
-                    {
-                        FirstName = "David",
-                        LastName = "Wilson",
-                        PhoneNumber = "089-537-9287",
-                        Products = new List<Product>
-                        {
-                            new Product { ProductName = "Grapes", Category = "Fruit", Location = "Western Cape", ProductionDate = DateTime.Now.AddDays(-17) },
-                            new Product { ProductName = "Organic Apples", Category = "Fruits", Location = "Western Cape", ProductionDate = DateTime.Now.AddDays(-5) },
-                            new Product { ProductName = "Organic Potatoes", Category = "Vegetables", Location = "Western Cape", ProductionDate = DateTime.Now.AddDays(-30) }
-                        }
-                    }
-                )
             };
 
-            foreach (var (user, profile) in farmers)
+            foreach (var user in seedUsers)
             {
                 var existingUser = await userManager.FindByEmailAsync(user.Email);
                 if (existingUser == null)
                 {
-                    var createResult = await userManager.CreateAsync(user, "Farmer123!");
-                    if (createResult.Succeeded)
+                    var result = await userManager.CreateAsync(user, "Password123!");
+                    if (result.Succeeded)
                     {
-                        await userManager.AddToRoleAsync(user, "Farmer");
-                        Console.WriteLine($"Farmer user {user.Email} created.");
-
-                        
-                        profile.UserId = user.Id;
-                        profile.Email = user.Email;
-                        dbContext.FarmerProfiles.Add(profile);
-                        await dbContext.SaveChangesAsync(); 
-
-                        var savedProfile = await dbContext.FarmerProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
-                        if (savedProfile != null)
+                        // Auto-assign roles based on email rules
+                        string role;
+                        if (user.Email.Equals("admin@agriconnect.co.za", StringComparison.OrdinalIgnoreCase))
                         {
-                            foreach (var product in profile.Products)
-                            {
-                                if (!dbContext.Products.Any(p => p.ProductName == product.ProductName && p.FarmerId == savedProfile.FarmerId))
-                                {
-                                    product.FarmerId = savedProfile.FarmerId;
-                                    dbContext.Products.Add(product);
-                                }
-                            }
-                            await dbContext.SaveChangesAsync(); 
+                            role = "Admin";
                         }
+                        else if (user.Email.EndsWith("@agriconnect.co.za", StringComparison.OrdinalIgnoreCase))
+                        {
+                            role = "Employee";
+                        }
+                        else
+                        {
+                            role = "Farmer";
+                        }
+
+                        await userManager.AddToRoleAsync(user, role);
+                        Console.WriteLine($"{role} user {user.Email} created.");
                     }
                     else
                     {
-                        Console.WriteLine($"Failed to create farmer {user.Email}: {string.Join(", ", createResult.Errors.Select(e => e.Description))}");
+                        Console.WriteLine($"Failed to create {user.Email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                     }
                 }
             }
 
-
-
-            // Seed Employee
-            var employeeEmail = "employee@agriconnect.co.za";
-            var employeeUser = await userManager.FindByEmailAsync(employeeEmail);
-            if (employeeUser == null)
+            // Example Farmer Profiles + Products
+            var john = await userManager.FindByEmailAsync("johnvanwyk@agrifarm.com");
+            if (john != null && !dbContext.FarmerProfiles.Any(p => p.UserId == john.Id))
             {
-                employeeUser = new IdentityUser
+                var profile = new FarmerProfile
                 {
-                    UserName = employeeEmail,
-                    Email = employeeEmail,
-                    EmailConfirmed = true
+                    UserId = john.Id,
+                    Email = john.Email,
+                    FirstName = "John",
+                    LastName = "Van Wyk",
+                    PhoneNumber = "082-511-6522",
+                    Products = new List<Product>
+                    {
+                        new Product { ProductName = "Organic Tomatoes", Category = "Vegetables", Location = "Kwa-Zulu Natal", ProductionDate = DateTime.Now },
+                        new Product { ProductName = "Free-Range Eggs", Category = "Poultry", Location = "Kwa-Zulu Natal", ProductionDate = DateTime.Now },
+                        new Product { ProductName = "Organic Carrots", Category = "Vegetables", Location = "Kwa-Zulu Natal", ProductionDate = DateTime.Now }
+                    }
                 };
+                dbContext.FarmerProfiles.Add(profile);
+            }
 
-                var result = await userManager.CreateAsync(employeeUser, "Employee123!");
-                if (result.Succeeded)
+            var maria = await userManager.FindByEmailAsync("mariamkhwanazi@greenfields.com");
+            if (maria != null && !dbContext.FarmerProfiles.Any(p => p.UserId == maria.Id))
+            {
+                var profile = new FarmerProfile
                 {
-                    await userManager.AddToRoleAsync(employeeUser, "Employee");
-                    Console.WriteLine("Employee user seeded.");
-                }
-                else
+                    UserId = maria.Id,
+                    Email = maria.Email,
+                    FirstName = "Maria",
+                    LastName = "Mkhwanazi",
+                    PhoneNumber = "071-624-5341",
+                    Products = new List<Product>
+                    {
+                        new Product { ProductName = "Artisanal Cheese", Category = "Dairy", Location = "Eastern Cape", ProductionDate = DateTime.Now.AddDays(-7) },
+                        new Product { ProductName = "Grass-Fed Beef", Category = "Meat", Location = "Eastern Cape", ProductionDate = DateTime.Now.AddDays(-28) },
+                        new Product { ProductName = "Goat Milk", Category = "Dairy", Location = "Eastern Cape", ProductionDate = DateTime.Now }
+                    }
+                };
+                dbContext.FarmerProfiles.Add(profile);
+            }
+
+            var david = await userManager.FindByEmailAsync("davidwilson@agrifields.com");
+            if (david != null && !dbContext.FarmerProfiles.Any(p => p.UserId == david.Id))
+            {
+                var profile = new FarmerProfile
                 {
-                    Console.WriteLine($"Failed to seed employee: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-                }
+                    UserId = david.Id,
+                    Email = david.Email,
+                    FirstName = "David",
+                    LastName = "Wilson",
+                    PhoneNumber = "089-537-9287",
+                    Products = new List<Product>
+                    {
+                        new Product { ProductName = "Grapes", Category = "Fruit", Location = "Western Cape", ProductionDate = DateTime.Now.AddDays(-17) },
+                        new Product { ProductName = "Organic Apples", Category = "Fruit", Location = "Western Cape", ProductionDate = DateTime.Now.AddDays(-5) },
+                        new Product { ProductName = "Organic Potatoes", Category = "Vegetables", Location = "Western Cape", ProductionDate = DateTime.Now.AddDays(-30) }
+                    }
+                };
+                dbContext.FarmerProfiles.Add(profile);
             }
 
             await dbContext.SaveChangesAsync();

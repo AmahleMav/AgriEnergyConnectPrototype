@@ -11,9 +11,9 @@ namespace AgriEnergyConnectPrototype.Controllers
     public class FarmersController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public FarmersController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public FarmersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -35,11 +35,13 @@ namespace AgriEnergyConnectPrototype.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser
+                var user = new ApplicationUser
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    PhoneNumber = model.PhoneNumber
+                    PhoneNumber = model.PhoneNumber,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName
                 };
 
                 var result = await _userManager.CreateAsync(user, "Farmer123!");
@@ -62,6 +64,7 @@ namespace AgriEnergyConnectPrototype.Controllers
 
             return View(model);
         }
+
 
         public async Task<IActionResult> Details(int id)
         {
