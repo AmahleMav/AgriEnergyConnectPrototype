@@ -2,17 +2,62 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="container mt-5">
-    <div class="row align-items-center">
-        <div class="col-md-6">
-            <h1 class="display-4">Welcome to Agri-Energy Connect</h1>
-            <p class="lead">The Bridge Between Agriculture and Innovation. The future of agriculture is in your hands!</p>
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center text-white text-center">
+    <div class="container-fluid px-4">
+        <h1 class="display-3 fw-bold mb-3 fade-in">Welcome to Agri-Energy Connect</h1>
+        <p class="lead mb-4 fade-in">Bridging agriculture and innovation — empowering farmers for a sustainable future.</p>
+        <a asp-area="Identity" asp-page="/Account/Login"
+           class="btn btn-lg btn-light text-success fw-semibold px-4 py-2 fade-in">Let's Get Started</a>
+    </div>
+</section>
 
-            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-lg mt-3">Let's Get Started</a>
-        </div>
-
-        <div class="col-md-6 text-center">
-            <img src="~/images/background_home.jpg" alt="Home Background" class="img-fluid" />
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h2 class="fw-bold text-success mb-5 fade-in">Why Choose Agri-Energy Connect?</h2>
+        <div class="row g-4">
+            <div class="col-md-4 fade-in">
+                <div class="card border-0 shadow-sm p-4">
+                    <i class="bi bi-flower1 text-success fs-1 mb-3"></i>
+                    <h5 class="fw-bold">Sustainable Agriculture</h5>
+                    <p>Empowering farmers with clean energy solutions and modern farming tools.</p>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in">
+                <div class="card border-0 shadow-sm p-4">
+                    <i class="bi bi-lightning-charge text-success fs-1 mb-3"></i>
+                    <h5 class="fw-bold">Green Energy Integration</h5>
+                    <p>Connecting agriculture to renewable energy sources for a greener tomorrow.</p>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in">
+                <div class="card border-0 shadow-sm p-4">
+                    <i class="bi bi-people text-success fs-1 mb-3"></i>
+                    <h5 class="fw-bold">Community Support</h5>
+                    <p>Building networks between farmers, innovators, and energy providers.</p>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Call-to-Action Section -->
+<section class="py-5 text-center">
+    <div class="container fade-in">
+        <h2 class="fw-bold mb-3 text-success">Ready to Join the Movement?</h2>
+        <p class="mb-4">Sign up today and start contributing to a sustainable agricultural future.</p>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-success btn-lg">Register Now</a>
+    </div>
+</section>
+
+
+<!-- Scroll Fade-in Script -->
+<script>
+    document.addEventListener('scroll', () => {
+        document.querySelectorAll('.fade-in').forEach(el => {
+            if (el.getBoundingClientRect().top < window.innerHeight - 100)
+                el.classList.add('show');
+        });
+    });
+</script>

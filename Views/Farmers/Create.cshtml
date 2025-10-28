@@ -3,28 +3,37 @@
     ViewData["Title"] = "Add Farmer";
 }
 
-<h2>Add New Farmer</h2>
+<div class="container my-5">
+    <h2 class="fw-bold text-success mb-4">Add New Farmer</h2>
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger" />
-    </div>
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger" />
-    </div>
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger" />
-    </div>
-    <div class="form-group">
-        <label asp-for="PhoneNumber"></label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger" />
-    </div>
-    <button type="submit" class="btn btn-success">Create Farmer</button>
-</form>
+    <form asp-action="Create" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="FirstName" class="form-label"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger" />
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="LastName" class="form-label"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger" />
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger" />
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="PhoneNumber" class="form-label"></label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger" />
+        </div>
+
+        <div class="col-12 d-flex">
+            <button type="submit" class="btn btn-success px-4 py-2">Create Farmer</button>
+            <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2 ms-2">Cancel</a>
+        </div>
+    </form>
+</div>

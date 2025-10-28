@@ -1,69 +1,124 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using AgriEnergyConnectPrototype.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AgriEnergyConnectPrototype</title>
+
+    <!-- Bootstrap & Icons -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AgriEnergyConnectPrototype.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-transparent">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Agri - Energy Connect</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            <!-- Left: Logo + Title -->
+            <a class="navbar-brand fw-bold text-success d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                <img src="~/images/agrilogo.jpeg" alt="Agri-Energy Connect" width="40" class="me-2" />
+                Agri-Energy Connect
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Center + Right Content -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Center: Navigation Links -->
+                <ul class="navbar-nav mx-auto text-center">
+                    <li class="nav-item">
+                        <a class="nav-link text-success fw-semibold" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+
+                    @if (User.IsInRole("Employee"))
+                    {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-success fw-semibold" asp-controller="Products" asp-action="Index">Products</a>
                         </li>
-
-                        @if (User.IsInRole("Employee"))
-                        {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                            <a class="nav-link text-success fw-semibold" asp-controller="Farmers" asp-action="Index">Farmers</a>
                         </li>
-                        }
+                    }
 
-                        @if (User.IsInRole("Farmer"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="MyProducts">My Products</a>
-                            </li>
-                        }
-
-                        @if (User.IsInRole("Employee"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Farmers" asp-action="Index">Farmers</a>
-                            </li>
-                        }
-
+                    @if (User.IsInRole("Farmer"))
+                    {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-success fw-semibold" asp-controller="Products" asp-action="MyProducts">My Products</a>
                         </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
+                    }
+
+                    <li class="nav-item">
+                        <a class="nav-link text-success fw-semibold" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                </ul>
+
+                <!-- Right: Auth Links -->
+                <ul class="navbar-nav ms-auto align-items-center">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        var appUser = await UserManager.GetUserAsync(User);
+                        var fullName = $"{appUser?.FirstName} {appUser?.LastName}".Trim();
+
+                        <li class="nav-item me-2">
+                            <span class="nav-link text-success fw-semibold">
+                                Hello @(string.IsNullOrWhiteSpace(fullName) ? appUser?.Email : fullName)!
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout"
+                                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                                <button type="submit" class="btn btn-outline-success btn-sm">Logout</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-success btn-sm" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-success btn-sm" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                        </li>
+                    }
+                </ul>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+        </div>
+    </nav>
 
-    <footer class="footer text-muted bg-transparent mt-5">
+    <!-- Main Content -->
+    <main role="main" class="flex-grow-1 pt-5 mt-4">
         <div class="container">
-            &copy; 2025 - AgriEnergyConnect 
+            @RenderBody()
+        </div>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-success text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-2">&copy; 2025 Agri-Energy Connect. All rights reserved.</p>
+            <div>
+                <a href="/privacy" class="text-white me-3 text-decoration-none">Privacy Policy</a>
+                <a href="/contact" class="text-white text-decoration-none">Contact Us</a>
+            </div>
         </div>
     </footer>
+
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

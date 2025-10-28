@@ -1,46 +1,42 @@
 ﻿@model IEnumerable<AgriEnergyConnectPrototype.Models.Product>
-
 @{
     ViewData["Title"] = "All Products";
     var locationQuery = Context.Request.Query["location"].ToString();
     var categoryQuery = Context.Request.Query["category"].ToString();
 }
 
-<h2>All Products</h2>
+<div class="container my-5">
+    <h2 class="fw-bold text-success mb-4">All Products</h2>
 
-<form method="get" class="mb-3 row g-2">
-    <div class="col-md-4">
-        <input type="text" name="location" value="@locationQuery" placeholder="Filter by location" class="form-control" />
-    </div>
-    <div class="col-md-4">
-        <input type="text" name="category" value="@categoryQuery" placeholder="Filter by category" class="form-control" />
-    </div>
-    <div class="col-md-4 d-flex">
-        <button type="submit" class="btn btn-primary me-2">Search</button>
-        <a href="@Url.Action("Index", "Products")" class="btn btn-outline-secondary">Clear</a>
-    </div>
-</form>
+    <!-- Filters -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="location" value="@locationQuery" placeholder="Filter by location" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="category" value="@categoryQuery" placeholder="Filter by category" class="form-control" />
+        </div>
+        <div class="col-md-4 d-flex">
+            <button type="submit" class="btn btn-primary me-2">Search</button>
+            <a href="@Url.Action("Index", "Products")" class="btn btn-outline-secondary">Clear</a>
+        </div>
+    </form>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Location</th>
-            <th>Production Date</th>
-            <th>Farmer</th>
-        </tr>
-    </thead>
-    <tbody>
+    <!-- Products Grid -->
+    <div class="row g-4">
         @foreach (var product in Model)
         {
-            <tr>
-                <td>@product.ProductName</td>
-                <td>@product.Category</td>
-                <td>@product.Location</td>
-                <td>@product.ProductionDate.ToShortDateString()</td>
-                <td>@product.FarmerProfile?.FirstName @product.FarmerProfile?.LastName</td>
-            </tr>
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">@product.ProductName</h5>
+                        <p class="card-text mb-1"><strong>Category:</strong> @product.Category</p>
+                        <p class="card-text mb-1"><strong>Location:</strong> @product.Location</p>
+                        <p class="card-text"><strong>Date:</strong> @product.ProductionDate.ToShortDateString()</p>
+                        <p class="card-text"><strong>Farmer:</strong> @product.FarmerProfile?.FirstName @product.FarmerProfile?.LastName</p>
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>
