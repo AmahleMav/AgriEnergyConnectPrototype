@@ -7,7 +7,8 @@ using AgriEnergyConnectPrototype.Models;
 
 namespace AgriEnergyConnectPrototype.Controllers
 {
-    [Authorize(Roles = "Employee")]
+    // Allow Employees and Admins
+    [Authorize(Roles = "Employee,Admin")]
     public class FarmersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,7 +22,10 @@ namespace AgriEnergyConnectPrototype.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var farmers = await _context.FarmerProfiles.Include(f => f.User).Include(f => f.Products).ToListAsync();
+            var farmers = await _context.FarmerProfiles
+                .Include(f => f.User)
+                .Include(f => f.Products)
+                .ToListAsync();
             return View(farmers);
         }
 
@@ -64,7 +68,6 @@ namespace AgriEnergyConnectPrototype.Controllers
 
             return View(model);
         }
-
 
         public async Task<IActionResult> Details(int id)
         {

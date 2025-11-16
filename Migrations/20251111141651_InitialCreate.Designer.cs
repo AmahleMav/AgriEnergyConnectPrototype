@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgriEnergyConnectPrototype.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250915135207_InitialCreate")]
+    [Migration("20251111141651_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -144,19 +144,54 @@ namespace AgriEnergyConnectPrototype.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DatasheetUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnergyType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FarmerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsOrganic")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Kind")
                         .HasColumnType("int");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double?>("PowerkW")
+                        .HasColumnType("float");
+
+                    b.Property<decimal?>("PricePerUnit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("PriceZar")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ProductionDate")
+                    b.Property<DateTime?>("ProductionDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("SuitableFor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VendorName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -1,24 +1,66 @@
 ﻿@model IEnumerable<AgriEnergyConnectPrototype.Models.Product>
+@using AgriEnergyConnectPrototype.Models
 @{
     ViewData["Title"] = "My Products";
 }
 
 <div class="container my-5">
     <h2 class="fw-bold text-success mb-4">My Products</h2>
-
     <a asp-action="Create" class="btn btn-success mb-4">Add New Product</a>
 
-    <!-- Products Grid -->
     <div class="row g-4">
-        @foreach (var product in Model)
+        @foreach (var p in Model)
         {
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card h-100 shadow-sm border-0">
+
+                    <!-- PRODUCT IMAGE (updated with product-img class) -->
+                    <img class="card-img-top product-img"
+                         src="@(string.IsNullOrWhiteSpace(p.ImageUrl) ? "/images/product.png" : p.ImageUrl)"
+                         alt="@p.ProductName"
+                         loading="lazy" />
+
                     <div class="card-body">
-                        <h5 class="card-title fw-bold">@product.ProductName</h5>
-                        <p class="card-text mb-1"><strong>Category:</strong> @product.Category</p>
-                        <p class="card-text mb-1"><strong>Location:</strong> @product.Location</p>
-                        <p class="card-text"><strong>Date:</strong> @product.ProductionDate.ToShortDateString()</p>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h5 class="card-title fw-bold mb-0">@p.ProductName</h5>
+                            @if (p.Kind == ProductKind.EnergySolution)
+                            {
+                                <span class="badge bg-info">Energy</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Produce</span>
+                            }
+                        </div>
+
+                        <div class="text-muted small mb-2">@p.Category • @p.Location</div>
+
+                        @if (p.Kind == ProductKind.Produce)
+                        {
+                            if (p.PricePerUnit.HasValue && !string.IsNullOrWhiteSpace(p.Unit))
+                            {
+                                <div class="fw-semibold mb-2">R @p.PricePerUnit.Value.ToString("0.##") / @p.Unit</div>
+                            }
+                            <div class="small">
+                                <strong>Date:</strong> @(p.ProductionDate?.ToShortDateString() ?? "n/a")
+                                @if (p.IsOrganic)
+                                {
+                                    <span class="badge bg-success ms-2">Organic</span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="small mb-1"><strong>Vendor:</strong> @p.VendorName</div>
+                            <div class="small mb-1">
+                                <strong>Type:</strong> @p.EnergyType
+                                @(p.PowerkW.HasValue ? $"• {p.PowerkW.Value:0.#} kW" : "")
+                            </div>
+                            @if (p.PriceZar.HasValue)
+                            {
+                                <div class="fw-semibold">From R @p.PriceZar.Value.ToString("N0")</div>
+                            }
+                        }
                     </div>
                 </div>
             </div>

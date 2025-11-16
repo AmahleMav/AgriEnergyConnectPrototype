@@ -22,5 +22,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .WithMany(f => f.Products)
             .HasForeignKey(p => p.FarmerId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Product>().Property(p => p.PricePerUnit).HasPrecision(18, 2);
+        builder.Entity<Product>().Property(p => p.PriceZar).HasPrecision(18, 2);
     }
+
 }

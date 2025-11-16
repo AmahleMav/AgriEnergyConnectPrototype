@@ -17,7 +17,17 @@
                         <h5 class="card-title fw-bold">@farmer.FirstName @farmer.LastName</h5>
                         <p class="card-text mb-1"><strong>Email:</strong> @farmer.Email</p>
                         <p class="card-text mb-1"><strong>Phone:</strong> @farmer.PhoneNumber</p>
-                        <p class="card-text mb-3"><strong>Products:</strong> @farmer.Products?.Count() </p>
+                        <p class="card-text mb-3"><strong>Products:</strong> @farmer.Products?.Count()</p>
+
+                        @if (farmer.Products?.Any() == true)
+                        {
+                            var first = farmer.Products.First();
+                            <img class="img-fluid rounded mt-2"
+                                 style="max-height:120px;object-fit:cover"
+                                 src="@(string.IsNullOrWhiteSpace(first.ImageUrl) ? "/images/product.png" : first.ImageUrl)"
+                                 alt="Sample product" />
+                        }
+
                         <a asp-action="Details" asp-route-id="@farmer.FarmerId" class="btn btn-outline-success mt-auto">View Products</a>
                     </div>
                 </div>

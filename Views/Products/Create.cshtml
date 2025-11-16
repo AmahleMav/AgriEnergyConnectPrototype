@@ -1,4 +1,5 @@
 ﻿@model AgriEnergyConnectPrototype.Models.Product
+@using AgriEnergyConnectPrototype.Models
 @{
     ViewData["Title"] = "Create Product";
 }
@@ -7,39 +8,116 @@
     <h2 class="fw-bold text-success mb-4">Create Product</h2>
 
     <form asp-action="Create" method="post" class="row g-3">
+        <!-- Kind -->
+        <div class="col-md-6">
+            <label asp-for="Kind" class="form-label">Type</label>
+            <select asp-for="Kind" class="form-select" id="kindSelect">
+                <option value="@ProductKind.Produce">Produce</option>
+                <option value="@ProductKind.EnergySolution">Energy Solution</option>
+            </select>
+        </div>
+
+        <!-- Common -->
         <div class="col-md-6">
             <label asp-for="ProductName" class="form-label"></label>
-            <input asp-for="ProductName" class="form-control" placeholder="Enter product name" />
-            <span asp-validation-for="ProductName" class="text-danger" />
+            <input asp-for="ProductName" class="form-control" placeholder="Enter name" />
+            <span asp-validation-for="ProductName" class="text-danger"></span>
         </div>
 
         <div class="col-md-6">
             <label asp-for="Category" class="form-label"></label>
-            <select asp-for="Category" class="form-select">
-                <option>Vegetables</option>
-                <option>Dairy</option>
-                <option>Meat</option>
-                <option>Fruits</option>
-                <option>Poultry</option>
-            </select>
-            <span asp-validation-for="Category" class="text-danger" />
+            <input asp-for="Category" class="form-control" placeholder="Vegetables, Fruits, Solar, Wind..." />
+            <span asp-validation-for="Category" class="text-danger"></span>
         </div>
 
         <div class="col-md-6">
             <label asp-for="Location" class="form-label"></label>
-            <input asp-for="Location" class="form-control" placeholder="Enter location" />
-            <span asp-validation-for="Location" class="text-danger" />
+            <input asp-for="Location" class="form-control" placeholder="e.g., Western Cape or National" />
+            <span asp-validation-for="Location" class="text-danger"></span>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-8">
+            <label asp-for="ImageUrl" class="form-label"></label>
+            <input asp-for="ImageUrl" class="form-control" placeholder="/images/seed/your-image.jpg" />
+            <span class="form-text">Use a local path under wwwroot, e.g., /images/seed/solar_irrigation_5kw.jpg</span>
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+
+        <!-- Produce-only -->
+        <div class="col-12"><hr /></div>
+        <div class="col-12 fw-semibold">Produce details</div>
+
+        <div class="col-md-4 produce-only">
             <label asp-for="ProductionDate" class="form-label"></label>
-            <input asp-for="ProductionDate" class="form-control" type="date" />
-            <span asp-validation-for="ProductionDate" class="text-danger" />
+            <input asp-for="ProductionDate" type="date" class="form-control" />
+            <span asp-validation-for="ProductionDate" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 produce-only">
+            <label asp-for="Unit" class="form-label"></label>
+            <input asp-for="Unit" class="form-control" placeholder="kg, tray, punnet, 50kg bag" />
+            <span asp-validation-for="Unit" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 produce-only">
+            <label asp-for="PricePerUnit" class="form-label"></label>
+            <input asp-for="PricePerUnit" type="number" step="0.01" class="form-control" />
+            <span asp-validation-for="PricePerUnit" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 produce-only">
+            <div class="form-check">
+                <input asp-for="IsOrganic" class="form-check-input" />
+                <label asp-for="IsOrganic" class="form-check-label">Organic</label>
+            </div>
+        </div>
+
+        <!-- Energy-only -->
+        <div class="col-12"><hr /></div>
+        <div class="col-12 fw-semibold">Energy solution details</div>
+
+        <div class="col-md-4 energy-only">
+            <label asp-for="VendorName" class="form-label"></label>
+            <input asp-for="VendorName" class="form-control" placeholder="Supplier/Vendor" />
+        </div>
+
+        <div class="col-md-4 energy-only">
+            <label asp-for="EnergyType" class="form-label"></label>
+            <input asp-for="EnergyType" class="form-control" placeholder="Solar, Wind, Biogas, Storage, Pump" />
+        </div>
+
+        <div class="col-md-4 energy-only">
+            <label asp-for="PowerkW" class="form-label"></label>
+            <input asp-for="PowerkW" type="number" step="0.1" class="form-control" />
+        </div>
+
+        <div class="col-md-6 energy-only">
+            <label asp-for="SuitableFor" class="form-label"></label>
+            <input asp-for="SuitableFor" class="form-control" placeholder="Irrigation, Cold storage, Dairy..." />
+        </div>
+
+        <div class="col-md-6 energy-only">
+            <label asp-for="PriceZar" class="form-label"></label>
+            <input asp-for="PriceZar" type="number" step="0.01" class="form-control" />
         </div>
 
         <div class="col-12">
-            <button type="submit" class="btn btn-success px-4 py-2">Save</button>
-            <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2 ms-2">Cancel</a>
+            <button type="submit" class="btn btn-success px-4 py-2 mt-2">Save</button>
+            <a asp-action="MyProducts" class="btn btn-outline-secondary px-4 py-2 ms-2 mt-2">Cancel</a>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const kindSelect = document.getElementById('kindSelect');
+        const showByKind = () => {
+            const isProduce = kindSelect.value === 'Produce' || kindSelect.value === '0';
+            document.querySelectorAll('.produce-only').forEach(el => el.style.display = isProduce ? '' : 'none');
+            document.querySelectorAll('.energy-only').forEach(el => el.style.display = isProduce ? 'none' : '');
+        };
+        showByKind();
+        kindSelect.addEventListener('change', showByKind);
+    </script>
+}
